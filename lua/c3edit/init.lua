@@ -9,7 +9,8 @@ function M.setup(user_config)
     config = vim.tbl_deep_extend("force", config, user_config or {})
 end
 
-function M.add_peer(ip_address)
+function M.add_peer(opts)
+    local ip_address = opts.args
     if not ip_address or ip_address == "" then
         print("Error: IP address is required.")
         return
