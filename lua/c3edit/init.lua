@@ -24,11 +24,7 @@ function M.start_backend()
     end
 
     backend_process = vim.fn.jobstart({config.backend_path}, {
-        on_stdout = function(_, data)
-            if data then
-                print(table.concat(data, "\n"))
-            end
-        end,
+        on_stdout = handle_backend_output,
         on_stderr = function(_, data)
             if data then
                 print("Error: " .. table.concat(data, "\n"))
@@ -66,10 +62,14 @@ function send_message_to_backend(mtype, message)
     vim.fn.chansend(backend_process, mjson .. "\n")
 end
 
-function handle_backend_output(data)
-    local lines = vim.split(data, "\n")
-    for _, line in ipairs(lines) do
-        parse_backend_message(line)
+function handle_backend_output(_handle, data)
+    -- TODO The API says that the data can include incomplete lines due to the
+    -- OS. However, the backend always flushes entire lines to output, so do we
+    -- actually have to handle that?
+    for _, line in ipairs(data) do
+        if line ~= "" then
+            parse_backend_message(line)
+        end        
     end
 end
 
@@ -81,9 +81,9 @@ function parse_backend_message(data)
     end
 
     if message.type == "create_document_response" then
-        print("Document created: " .. message.name)
+        print("Document created with ID: " .. message.id)
     else
-        print("Error: Unknown message type")
+        print("Error: Unknown message: " .. data)
     end
 end
 
