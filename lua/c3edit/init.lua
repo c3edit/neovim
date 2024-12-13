@@ -37,6 +37,18 @@ function M.send_bogus_data()
     send_message_to_backend("create_document", {name = "foo", initial_content = "data"})
 end
 
+function M.create_document()
+    local current_file = vim.api.nvim_buf_get_name(0)
+    local basename = vim.fn.fnamemodify(current_file, ":t")
+
+    -- get current file contents
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local content = table.concat(lines, "\n")
+
+    -- send message to backend
+    send_message_to_backend("create_document", {name = basename, initial_content = content})
+end
+
 function send_message_to_backend(mtype, message)
     message.type = mtype
     local mjson = vim.fn.json_encode(message)
