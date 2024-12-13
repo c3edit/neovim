@@ -27,7 +27,14 @@ function M.start_backend()
 end
 
 function M.send_bogus_data()
-    vim.fn.chansend(backend_process, "bogus data\n")
+    send_message_to_backend("create_document", {name = "foo", initial_content = "data"})
+end
+
+function send_message_to_backend(mtype, message)
+    message.type = mtype
+    local mjson = vim.fn.json_encode(message)
+    
+    vim.fn.chansend(backend_process, mjson .. "\n")
 end
 
 return M
