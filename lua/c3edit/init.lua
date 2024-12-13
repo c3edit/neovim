@@ -56,4 +56,25 @@ function send_message_to_backend(mtype, message)
     vim.fn.chansend(backend_process, mjson .. "\n")
 end
 
+function handle_backend_output(data)
+    local lines = vim.split(data, "\n")
+    for _, line in ipairs(lines) do
+        parse_backend_message(line)
+    end
+end
+
+function parse_backend_message(data)
+    local message = vim.fn.json_decode(data)
+    if not message then
+        print("Error: Could not parse JSON message")
+        return
+    end
+
+    if message.type == "create_document_response" then
+        print("Document created: " .. message.name)
+    else
+        print("Error: Unknown message type")
+    end
+end
+
 return M
