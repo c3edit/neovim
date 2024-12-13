@@ -1,7 +1,5 @@
-local c3edit = require('c3edit')
+local commands = require('c3edit.commands')
 
-vim.api.nvim_create_user_command('StartBackend', c3edit.start_backend, {})
-
-vim.api.nvim_create_user_command('CreateDocument', c3edit.create_document, {})
-
-vim.api.nvim_create_user_command('AddPeer', c3edit.add_peer, { nargs = 1 })
+vim.api.nvim_create_user_command('StartBackend', commands.start_backend, {})
+vim.api.nvim_create_user_command('CreateDocument', commands.create_document, {})
+vim.api.nvim_create_user_command('AddPeer', commands.add_peer, { nargs = 1 })
