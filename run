@@ -1,3 +1,6 @@
 #!/bin/sh
 
-nvim -u NORC --cmd "set runtimepath^=$(pwd)" --cmd ":lua require('c3edit').setup({backend_path = '/home/ad/git/c3edit-backend/target/debug/c3edit'})"
+nvim -u NORC \
+     --cmd "set runtimepath^=$(pwd)" \
+     --cmd ":lua require('c3edit').setup({backend_path = '/home/ad/git/c3edit-backend/target/debug/c3edit'})" \
+     --cmd ":e /tmp/test" \
