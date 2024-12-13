@@ -9,3 +9,7 @@ end, {})
 vim.api.nvim_create_user_command('CreateDocument', function()
     require('c3edit').create_document()
 end, {})
+
+vim.api.nvim_create_user_command('AddPeer', function(opts)
+    require('c3edit').add_peer(opts.args)
+end, { nargs = 1 })
