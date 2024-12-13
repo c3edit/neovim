@@ -15,6 +15,7 @@ function M.create_document_response(message)
     end
 
     state.documentIdToBuffer[message.id] = state.currentlyCreatingDocument
+    state.bufferToDocumentId[state.currentlyCreatingDocument] = message.id
     vim.api.nvim_buf_attach(state.currentlyCreatingDocument, false, {
         on_bytes = events.buf_on_bytes
     })
