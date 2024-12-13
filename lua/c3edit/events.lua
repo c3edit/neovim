@@ -3,6 +3,10 @@ local state = require('c3edit.state')
 local M = {}
 
 function M.buf_on_bytes(_sig, buf, _tick, start_row, start_col, offset, old_end_row, old_end_col, old_end_len, new_end_row, new_end_col, new_end_len)
+    if state.isEditing then
+        return
+    end
+    
     -- Cannot hoist due to circular dependency.
     local backend = require('c3edit.backend')
     

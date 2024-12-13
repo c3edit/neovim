@@ -36,6 +36,7 @@ function M.change(message)
     local change = message.change
     local row, col = utils.offset_to_row_col(buffer, change.index)
 
+    state.isEditing = true
     if change.type == "insert" then
         vim.api.nvim_buf_set_text(buffer, row, col, row, col, {change.text})
     elseif change.type == "delete" then
@@ -44,6 +45,7 @@ function M.change(message)
     else
         print("Error: Unknown change type: " .. change.type)
     end
+    state.isEditing = false
 end
 
 function M.set_cursor(message)
