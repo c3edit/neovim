@@ -1,5 +1,6 @@
 local utils = require('c3edit.utils')
 local state = require('c3edit.state')
+local events = require('c3edit.events')
 
 local M = {}
 
@@ -14,6 +15,10 @@ function M.create_document_response(message)
     end
 
     state.documentIdToBuffer[message.id] = state.currentlyCreatingDocument
+    vim.api.nvim_buf_attach(state.currentlyCreatingDocument, false, {
+        on_bytes = events.buf_on_bytes
+    })
+
     state.currentlyCreatingDocument = nil
 
     print("Document created with ID: " .. message.id)
