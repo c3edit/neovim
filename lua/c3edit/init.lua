@@ -26,4 +26,8 @@ function M.start_backend()
     print("Backend started")
 end
 
+function M.send_bogus_data()
+    vim.fn.chansend(backend_process, "bogus data\n")
+end
+
 return M
