@@ -80,6 +80,8 @@ function parse_backend_message(data)
 
     if message.type == "create_document_response" then
         handle_create_document_response(message)
+    elseif message.type == "change" then
+        handle_change(message)
     else
         print("Error: Unknown message: " .. data)
     end
@@ -95,6 +97,46 @@ function handle_create_document_response(message)
     currentlyCreatingDocument = nil
 
     print("Document created with ID: " .. message.id)
+end
+
+function handle_change(message)
+    local document_id = message.document_id
+    local buffer = documentIdToBuffer[document_id]
+    if not buffer then
+        print("Error: Received change for unknown document ID: " .. document_id)
+        return
+    end
+
+    local change = message.change
+    local row, col = offset_to_row_col(buffer, change.index)
+
+    if change.type == "insert" then
+        vim.api.nvim_buf_set_text(buffer, row, col, row, col, {change.text})
+    elseif change.type == "delete" then
+        local end_row, end_col = offset_to_row_col(buffer, change.index + change.len)
+        vim.api.nvim_buf_set_text(buffer, row, col, end_row, end_col, {})
+    else
+        print("Error: Unknown change type: " .. change.type)
+    end
+end
+
+function offset_to_row_col(buf, offset)
+    -- Get the buffer lines
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
+
+    -- Initialize the current offset
+    local current_offset = 0
+
+    -- Traverse lines to find the target row and column
+    for row, line in ipairs(lines) do
+        if current_offset + #line + 1 > offset then
+            local col = offset - current_offset
+            return row - 1, col -- Return 0-based row and column
+        end
+        current_offset = current_offset + #line + 1 -- Include newline character
+    end
+
+    return nil, nil
 end
 
 return M
