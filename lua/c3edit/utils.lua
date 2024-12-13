@@ -15,4 +15,8 @@ function M.offset_to_row_col(buf, offset)
     return nil, nil
 end
 
+function M.row_col_to_offset(buf, row, col)
+    return vim.api.nvim_buf_get_offset(buf, row) + col
+end
+
 return M

@@ -1,4 +1,5 @@
 local state = require('c3edit.state')
+local utils = require('c3edit.utils')
 
 local M = {}
 
@@ -45,6 +46,26 @@ function M.buf_on_bytes(_sig, buf, _tick, start_row, start_col, offset, old_end_
     else
         print("Error: Unknown on_bytes operation")
     end
+end
+
+function M.on_cursor_moved()
+    -- Cannot hoist due to circular dependency.
+    local backend = require('c3edit.backend')
+    
+    local buf = vim.api.nvim_get_current_buf()
+    local document_id = state.bufferToDocumentId[buf]
+    if not document_id then
+        print("Error: Received on_cursor_moved for unknown buffer ID: " .. buf)
+        return
+    end
+
+    -- Row is one-indexed here!
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local offset = utils.row_col_to_offset(buf, row - 1, col)
+    backend.send_message("set_cursor", {
+        document_id = document_id,
+        location = offset,
+    })
 end
 
 return M

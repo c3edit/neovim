@@ -19,6 +19,10 @@ function M.create_document_response(message)
     vim.api.nvim_buf_attach(state.currentlyCreatingDocument, false, {
         on_bytes = events.buf_on_bytes
     })
+    vim.api.nvim_create_autocmd("CursorMoved", {
+        buffer = state.currentlyCreatingDocument,
+        callback = events.on_cursor_moved,
+    })
 
     state.currentlyCreatingDocument = nil
 
