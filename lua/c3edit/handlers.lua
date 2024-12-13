@@ -57,6 +57,7 @@ function M.set_cursor(message)
     local peer_id = message.peer_id
     if peer_id then
         print("Peer cursors are not yet supported. Ignoring peer_id: " .. peer_id)
+        return
     end
 
     if buffer ~= vim.api.nvim_get_current_buf() then
