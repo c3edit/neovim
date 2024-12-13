@@ -8,6 +8,11 @@ function M.setup(user_config)
 end
 
 function M.start_backend()
+    if not config.backend_path then
+        print("Error: Backend path is not set. Please configure it using require('c3edit').setup().")
+        return
+    end
+
     backend_process = vim.fn.jobstart({config.backend_path}, {
         on_stdout = function(_, data)
             if data then
