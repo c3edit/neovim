@@ -51,7 +51,9 @@ function parse_backend_message(data)
         return
     end
 
-    if message.type == "create_document_response" then
+    if message.type == "add_peer_response" then
+        handlers.add_peer_response(message)
+    elseif message.type == "create_document_response" then
         handlers.create_document_response(message)
     elseif message.type == "change" then
         handlers.change(message)

@@ -3,6 +3,10 @@ local state = require('c3edit.state')
 
 local M = {}
 
+function M.add_peer_response(message)
+    print("Added peer at address: " .. message.address)
+end
+
 function M.create_document_response(message)
     if not state.currentlyCreatingDocument then
         print("Error: Received create_document_response but no document is being created")
