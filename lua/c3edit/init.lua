@@ -82,6 +82,8 @@ function parse_backend_message(data)
         handle_create_document_response(message)
     elseif message.type == "change" then
         handle_change(message)
+    elseif message.type == "set_cursor" then
+        handle_set_cursor(message)
     else
         print("Error: Unknown message: " .. data)
     end
@@ -111,6 +113,7 @@ function handle_change(message)
     local row, col = offset_to_row_col(buffer, change.index)
 
     if change.type == "insert" then
+        -- TODO fix multi-line text (split by newline character, I think)
         vim.api.nvim_buf_set_text(buffer, row, col, row, col, {change.text})
     elseif change.type == "delete" then
         local end_row, end_col = offset_to_row_col(buffer, change.index + change.len)
@@ -118,6 +121,30 @@ function handle_change(message)
     else
         print("Error: Unknown change type: " .. change.type)
     end
+end
+
+function handle_set_cursor(message)
+    local document_id = message.document_id
+    local buffer = documentIdToBuffer[document_id]
+    if not buffer then
+        print("Error: Received set_cursor for unknown document ID: " .. document_id)
+        return
+    end
+
+    local peer_id = message.peer_id
+    if peer_id then
+        -- TODO Implement peer cursors
+        print("Peer cursors are not yet supported. Ignoring peer_id: " .. peer_id)
+    end
+
+    if buffer ~= vim.api.nvim_get_current_buf() then
+        print("Received set_cursor for a document that is not the current buffer!")
+        return
+    end
+    
+    local row, col = offset_to_row_col(buffer, message.location)
+    print("Setting cursor to row: " .. row .. ", col: " .. col)
+    vim.api.nvim_win_set_cursor(0, {row + 1, col})
 end
 
 function offset_to_row_col(buf, offset)
