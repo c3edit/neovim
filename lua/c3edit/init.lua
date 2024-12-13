@@ -1,12 +1,14 @@
+local config = require('c3edit.config').defaults
+
 local M = {}
 local backend_process = nil
 
-function M.greet()
-    print("Hello from your plugin!")
+function M.setup(user_config)
+    config = vim.tbl_deep_extend("force", config, user_config or {})
 end
 
 function M.start_backend()
-    backend_process = vim.fn.jobstart({"/home/ad/git/c3edit-backend/target/debug/c3edit"}, {
+    backend_process = vim.fn.jobstart({config.backend_path}, {
         on_stdout = function(_, data)
             if data then
                 print(table.concat(data, "\n"))
