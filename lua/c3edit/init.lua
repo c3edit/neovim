@@ -41,10 +41,6 @@ function M.start_backend()
     print("Backend started")
 end
 
-function M.send_bogus_data()
-    send_message_to_backend("create_document", {name = "foo", initial_content = "data"})
-end
-
 function M.create_document()
     local current_file = vim.api.nvim_buf_get_name(0)
     local basename = vim.fn.fnamemodify(current_file, ":t")
