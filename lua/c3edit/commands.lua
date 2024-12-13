@@ -1,16 +1,10 @@
 local backend = require('c3edit.backend')
 local state = require('c3edit.state')
-local config = require('c3edit.config').config
 
 local M = {}
 
 function M.start_backend()
-    if not config.backend_path then
-        print("Error: Backend path is not set. Please configure it using require('c3edit').setup().")
-        return
-    end
-
-    backend.start_backend(config)
+    backend.start_backend()
 end
 
 function M.create_document()

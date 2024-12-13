@@ -3,7 +3,9 @@ local handlers = require('c3edit.handlers')
 local M = {}
 local backend_process = nil
 
-function M.start_backend(config)
+function M.start_backend()
+    local config = require('c3edit.config').config
+    
     if not config.backend_path then
         print("Error: Backend path is not set. Please configure it using require('c3edit').setup().")
         return
