@@ -3,7 +3,7 @@ local state = require('c3edit.state')
 
 local M = {}
 
-function M.handle_create_document_response(message)
+function M.create_document_response(message)
     if not state.currentlyCreatingDocument then
         print("Error: Received create_document_response but no document is being created")
         return
@@ -15,7 +15,7 @@ function M.handle_create_document_response(message)
     print("Document created with ID: " .. message.id)
 end
 
-function M.handle_change(message)
+function M.change(message)
     local document_id = message.document_id
     local buffer = state.documentIdToBuffer[document_id]
     if not buffer then
@@ -36,7 +36,7 @@ function M.handle_change(message)
     end
 end
 
-function M.handle_set_cursor(message)
+function M.set_cursor(message)
     local document_id = message.document_id
     local buffer = state.documentIdToBuffer[document_id]
     if not buffer then

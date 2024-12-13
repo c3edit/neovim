@@ -52,11 +52,11 @@ function parse_backend_message(data)
     end
 
     if message.type == "create_document_response" then
-        handlers.handle_create_document_response(message)
+        handlers.create_document_response(message)
     elseif message.type == "change" then
-        handlers.handle_change(message)
+        handlers.change(message)
     elseif message.type == "set_cursor" then
-        handlers.handle_set_cursor(message)
+        handlers.set_cursor(message)
     else
         print("Error: Unknown message: " .. data)
     end
