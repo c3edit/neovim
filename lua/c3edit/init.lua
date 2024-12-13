@@ -2,6 +2,7 @@ local config = require('c3edit.config').defaults
 local utils = require('c3edit.utils')
 local backend = require('c3edit.backend')
 local handlers = require('c3edit.handlers')
+local state = require('c3edit.state')
 
 local M = {}
 
@@ -26,7 +27,6 @@ function M.start_backend()
         return
     end
 
-
     backend.start_backend(config)
 end
 
@@ -38,7 +38,7 @@ function M.create_document()
     local content = table.concat(lines, "\n")
 
     backend.send_message("create_document", {name = basename, initial_content = content})
-    currentlyCreatingDocument = vim.api.nvim_get_current_buf()
+    state.currentlyCreatingDocument = vim.api.nvim_get_current_buf()
 end
 
 return M

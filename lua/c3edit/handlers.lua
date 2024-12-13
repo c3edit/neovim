@@ -1,24 +1,23 @@
 local utils = require('c3edit.utils')
+local state = require('c3edit.state')
 
 local M = {}
-local documentIdToBuffer = {}
-local currentlyCreatingDocument = nil
 
 function M.handle_create_document_response(message)
-    if not currentlyCreatingDocument then
+    if not state.currentlyCreatingDocument then
         print("Error: Received create_document_response but no document is being created")
         return
     end
 
-    documentIdToBuffer[message.id] = currentlyCreatingDocument
-    currentlyCreatingDocument = nil
+    state.documentIdToBuffer[message.id] = state.currentlyCreatingDocument
+    state.currentlyCreatingDocument = nil
 
     print("Document created with ID: " .. message.id)
 end
 
 function M.handle_change(message)
     local document_id = message.document_id
-    local buffer = documentIdToBuffer[document_id]
+    local buffer = state.documentIdToBuffer[document_id]
     if not buffer then
         print("Error: Received change for unknown document ID: " .. document_id)
         return
@@ -39,7 +38,7 @@ end
 
 function M.handle_set_cursor(message)
     local document_id = message.document_id
-    local buffer = documentIdToBuffer[document_id]
+    local buffer = state.documentIdToBuffer[document_id]
     if not buffer then
         print("Error: Received set_cursor for unknown document ID: " .. document_id)
         return
