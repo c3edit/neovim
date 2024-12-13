@@ -2,6 +2,8 @@ local config = require('c3edit.config').defaults
 
 local M = {}
 local backend_process = nil
+local currentlyCreatingDocument = nil
+local documentIdToBuffer = {}
 
 function M.setup(user_config)
     config = vim.tbl_deep_extend("force", config, user_config or {})
@@ -47,12 +49,11 @@ function M.create_document()
     local current_file = vim.api.nvim_buf_get_name(0)
     local basename = vim.fn.fnamemodify(current_file, ":t")
 
-    -- get current file contents
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     local content = table.concat(lines, "\n")
 
-    -- send message to backend
     send_message_to_backend("create_document", {name = basename, initial_content = content})
+    currentlyCreatingDocument = vim.api.nvim_get_current_buf()
 end
 
 function send_message_to_backend(mtype, message)
@@ -81,10 +82,22 @@ function parse_backend_message(data)
     end
 
     if message.type == "create_document_response" then
-        print("Document created with ID: " .. message.id)
+        handle_create_document_response(message)
     else
         print("Error: Unknown message: " .. data)
     end
+end
+
+function handle_create_document_response(message)
+    if not currentlyCreatingDocument then
+        print("Error: Received create_document_response but no document is being created")
+        return
+    end
+
+    documentIdToBuffer[message.id] = currentlyCreatingDocument
+    currentlyCreatingDocument = nil
+
+    print("Document created with ID: " .. message.id)
 end
 
 return M
