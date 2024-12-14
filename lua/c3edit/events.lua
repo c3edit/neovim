@@ -84,4 +84,10 @@ function M.on_cursor_moved()
     end
 end
 
+function M.on_visual_mode_switch()
+    -- Call this to update the cursor appearance (will add/remove selection as
+    -- appropriate).
+    on_cursor_moved()
+end
+
 return M

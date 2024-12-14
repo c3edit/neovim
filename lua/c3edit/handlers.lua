@@ -27,6 +27,12 @@ function M.create_document_response(message)
         buffer = state.currentlyCreatingDocument,
         callback = events.on_cursor_moved,
     })
+    vim.api.nvim_create_autocmd("ModeChanged", {
+        -- Reuse `on_cursor_moved` to update the cursor appearance (will add/remove
+        -- selection as appropriate).
+        pattern = {"*:v", "v:*"},
+        callback = events.on_cursor_moved,
+    })
 
     state.currentlyCreatingDocument = nil
 
