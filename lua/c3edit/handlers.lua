@@ -135,23 +135,30 @@ function M.set_selection(message)
         
         -- TODO Support multiple peers.
         local cursor_extmark = state.documentIdToCursorExtmark[document_id]
-        local row, col = utils.offset_to_row_col(buffer, message.point)
-        local mark_row, mark_col = utils.offset_to_row_col(buffer, message.mark)
+        local start_row, start_col
+        local end_row, end_col
+
+        if message.point < message.mark then
+            start_row, start_col = utils.offset_to_row_col(buffer, message.point)
+            end_row, end_col = utils.offset_to_row_col(buffer, message.mark)
+        else
+            start_row, start_col = utils.offset_to_row_col(buffer, message.mark)
+            end_row, end_col = utils.offset_to_row_col(buffer, message.point)
+        end
 
         cursor_extmark = vim.api.nvim_buf_set_extmark(
             buffer,
             vim.api.nvim_create_namespace("c3edit_peer_cursor_ns"),
-            row, col,
+            start_row, start_col,
             {
                 id = cursor_extmark,
-                end_line = mark_row,
-                end_col = mark_col,
+                end_line = end_row,
+                end_col = end_col,
                 hl_group = "PeerCursor",
             }
         )
 
         state.documentIdToCursorExtmark[document_id] = cursor_extmark
-        
         
         return
     end
