@@ -23,6 +23,10 @@ function M.create_document_response(message)
         buffer = state.currentlyCreatingDocument,
         callback = events.on_cursor_moved,
     })
+    vim.api.nvim_create_autocmd("CursorMovedI", {
+        buffer = state.currentlyCreatingDocument,
+        callback = events.on_cursor_moved,
+    })
 
     state.currentlyCreatingDocument = nil
 
