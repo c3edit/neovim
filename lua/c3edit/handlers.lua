@@ -72,7 +72,26 @@ function M.set_cursor(message)
 
     local peer_id = message.peer_id
     if peer_id then
-        print("Peer cursors are not yet supported. Ignoring peer_id: " .. peer_id)
+        print("Received set_cursor for peer ID: " .. peer_id)
+
+        -- TODO Support multiple peers.
+        local cursor_extmark = state.documentIdToCursorExtmark[document_id]
+        local row, col = utils.offset_to_row_col(buffer, message.location)
+
+        cursor_extmark = vim.api.nvim_buf_set_extmark(
+            buffer,
+            vim.api.nvim_create_namespace("c3edit_peer_cursor_ns"),
+            row, col,
+            {
+                id = cursor_extmark,
+                end_line = row,
+                end_col = col + 1,
+                hl_group = "Cursor",
+            }
+        )
+
+        state.documentIdToCursorExtmark[document_id] = cursor_extmark
+                
         return
     end
 
