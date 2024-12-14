@@ -59,13 +59,29 @@ function M.on_cursor_moved()
         return
     end
 
-    -- Row is one-indexed here!
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    local offset = utils.row_col_to_offset(buf, row - 1, col)
-    backend.send_message("set_cursor", {
-        document_id = document_id,
-        location = offset,
-    })
+    local mode = vim.api.nvim_get_mode().mode
+    if mode == "v" then
+        -- Both row and column are one-indexed here!
+        local _buf, row, col = unpack(vim.fn.getpos("."))
+        local _buf, mark_row, mark_col = unpack(vim.fn.getpos("v"))
+
+        local point = utils.row_col_to_offset(buf, row - 1, col - 1)
+        local mark = utils.row_col_to_offset(buf, mark_row - 1, mark_col - 1)
+
+        backend.send_message("set_selection", {
+            document_id = document_id,
+            point = point,
+            mark = mark,
+        })
+    else
+        -- Row is one-indexed here!
+        local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+        local offset = utils.row_col_to_offset(buf, row - 1, col)
+        backend.send_message("set_cursor", {
+            document_id = document_id,
+            location = offset,
+        })
+    end
 end
 
 return M
