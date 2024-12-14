@@ -113,4 +113,50 @@ function M.set_cursor(message)
     vim.api.nvim_win_set_cursor(0, {row + 1, col})
 end
 
+function M.set_selection(message)
+    local document_id = message.document_id
+    local buffer = state.documentIdToBuffer[document_id]
+    if not buffer then
+        print("Error: Received set_selection for unknown document ID: " .. document_id)
+        return
+    end
+
+    local peer_id = message.peer_id
+    if peer_id then
+        print("Received set_selection for peer ID: " .. peer_id)
+
+        -- TODO Move somewhere appropriate.
+        vim.api.nvim_set_hl(
+            vim.api.nvim_create_namespace("c3edit_peer_cursor_ns"),
+            "PeerCursor",
+            {bg = "red"}
+        )
+        vim.api.nvim_set_hl_ns(vim.api.nvim_create_namespace("c3edit_peer_cursor_ns"))
+        
+        -- TODO Support multiple peers.
+        local cursor_extmark = state.documentIdToCursorExtmark[document_id]
+        local row, col = utils.offset_to_row_col(buffer, message.point)
+        local mark_row, mark_col = utils.offset_to_row_col(buffer, message.mark)
+
+        cursor_extmark = vim.api.nvim_buf_set_extmark(
+            buffer,
+            vim.api.nvim_create_namespace("c3edit_peer_cursor_ns"),
+            row, col,
+            {
+                id = cursor_extmark,
+                end_line = mark_row,
+                end_col = mark_col,
+                hl_group = "PeerCursor",
+            }
+        )
+
+        state.documentIdToCursorExtmark[document_id] = cursor_extmark
+        
+        
+        return
+    end
+
+    print("Error: set_selection for self not yet implemented")
+end
+
 return M

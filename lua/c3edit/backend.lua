@@ -59,6 +59,8 @@ function parse_backend_message(data)
         handlers.change(message)
     elseif message.type == "set_cursor" then
         handlers.set_cursor(message)
+    elseif message.type == "set_selection" then
+        handlers.set_selection(message)
     else
         print("Error: Unknown message: " .. data)
     end
