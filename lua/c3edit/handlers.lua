@@ -74,6 +74,14 @@ function M.set_cursor(message)
     if peer_id then
         print("Received set_cursor for peer ID: " .. peer_id)
 
+        -- TODO Move somewhere appropriate.
+        vim.api.nvim_set_hl(
+            vim.api.nvim_create_namespace("c3edit_peer_cursor_ns"),
+            "PeerCursor",
+            {bg = "red"}
+        )
+        vim.api.nvim_set_hl_ns(vim.api.nvim_create_namespace("c3edit_peer_cursor_ns"))
+        
         -- TODO Support multiple peers.
         local cursor_extmark = state.documentIdToCursorExtmark[document_id]
         local row, col = utils.offset_to_row_col(buffer, message.location)
@@ -86,7 +94,7 @@ function M.set_cursor(message)
                 id = cursor_extmark,
                 end_line = row,
                 end_col = col + 1,
-                hl_group = "Cursor",
+                hl_group = "PeerCursor",
             }
         )
 
